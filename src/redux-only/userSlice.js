@@ -16,16 +16,22 @@ export const userSlice = createSlice({
         create: (state, action) => {
             const { users, filteredUsers } = state;
             const { id } = action.payload;
+            let isExist = false;
+
             if (users.length === 0) {
-                return { ...state, users: { ...action.payload } };
+                return { filteredUsers, users: { ...action.payload } };
             }
             const containAdded = users.map((user) => {
                 if (user.id === id) {
                     return { ...user, ...action.payload };
+                    isExist = true;
                 }
                 return user;
             });
-            return { containAdded, filteredUsers }
+            if (!isExist) {
+                containAdded.push({ ...action.payload })
+            }
+            return { users: containAdded, filteredUsers }
 
 
         },
@@ -43,7 +49,7 @@ export const userSlice = createSlice({
                 removedArray.push({ ...user });
                 return removedArray;
             }, []);
-            return { remainUsers, filteredUsers }
+            return { users: remainUsers, filteredUsers }
         },
         filter: (state, action) => {
             const { users } = state;
